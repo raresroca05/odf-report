@@ -78,9 +78,11 @@ private
   def find_table_node(doc)
 
     tables = doc.xpath(".//table:table[@table:name='#{@name}']")
+    return tables.first if tables.first
 
-    tables.empty? ? nil : tables.first
-
+    bookmark = doc.xpath(".//text:bookmark[@text:name='#{@name}']")
+    return nil unless bookmark.first
+    bookmark.first.ancestors('.//table:table').first
   end
 
 end
