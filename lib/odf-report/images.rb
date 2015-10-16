@@ -12,17 +12,12 @@ module ODFReport
           @image_names_replacements[path] = ::File.join(IMAGE_DIR_NAME, ::File.basename(placeholder_path))
         end
 
-        puts content.xpath(".//text:bookmark-start")
-        puts image_name
-        puts content.xpath(".//text:bookmark-start[text:name='#{image_name}']")
         if current_node = content.xpath(".//text:bookmark-start[@text:name='#{image_name}']").first
           while parent_node = current_node.next
-            node = current_node.xpath("//draw:image").first
-            puts node
+            node = current_node.xpath(".//draw:image").first
             (current_node = current_node.next and next) if node.nil?
             placeholder_path = node.attribute('href').value
             @image_names_replacements[path] = ::File.join(IMAGE_DIR_NAME, ::File.basename(placeholder_path))
-            puts 'replace'
             break
           end
         end
