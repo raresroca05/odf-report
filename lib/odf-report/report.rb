@@ -8,6 +8,7 @@ class Report
     @file = ODFReport::File.new(template_name)
 
     @texts = []
+    @links = []
     @fields = []
     @tables = []
     @images = {}
@@ -22,6 +23,12 @@ class Report
     opts = {:name => field_tag, :value => value}
     field = Field.new(opts)
     @fields << field
+  end
+
+  def add_link(field_tag, value='')
+    opts = {:name => field_tag, :value => value}
+    link = Link.new(opts)
+    @links << link
   end
 
   def add_text(field_tag, value='')
@@ -62,6 +69,7 @@ class Report
           @tables.each   { |t| t.replace!(doc) }
 
           @texts.each    { |t| t.replace!(doc) }
+          @links.each    { |l| l.replace!(doc) }
           @fields.each   { |f| f.replace!(doc) }
 
           find_image_name_matches(doc)
