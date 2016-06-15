@@ -45,10 +45,13 @@ module ODFReport
 
     def find_section_node(doc)
 
-      sections = doc.xpath(".//text:section[@text:name='#{@name}']")
+      possible_sections = doc.xpath(".//text:section[@text:name='#{@name}']")
 
-      sections.empty? ? nil : sections.first
+      return possible_sections.first unless possible_sections.empty?
 
+      bookmark = doc.xpath(".//text:bookmark[@text:name='#{@name}']")
+      return nil unless bookmark.first
+      bookmark.first.ancestors('.//text:section').first
     end
 
     def get_section_node
