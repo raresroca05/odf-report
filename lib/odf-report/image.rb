@@ -1,12 +1,13 @@
 module ODFReport
 
-  class Field
+  class Image
 
-    DELIMITERS = %w({{ }})
+    DELIMITERS = %w([ ])
+    IMAGE_DIR_NAME = "Pictures"
 
     def initialize(opts, &block)
       @name = opts[:name]
-      @data_field = opts[:data_field]
+      @data_image = opts[:data_image]
 
       unless @value = opts[:value]
 
@@ -22,15 +23,34 @@ module ODFReport
     end
 
     def replace!(content, data_item = nil)
+      old_file = ''
 
-      txt = content.inner_html
+      path = get_value(data_item)
 
-      val = get_value(data_item)
+      if path.empty?
+        return
+      end
 
-      txt.gsub!(to_placeholder, sanitize(val))
 
-      content.inner_html = txt
+      if node = content.xpath("//draw:frame[@draw:name='#{@name}']/draw:image").first
+        placeholder_path = node.attribute('href').value
+        node.attribute('href').value = ::File.join(IMAGE_DIR_NAME, ::File.basename(path))
+        old_file = ::File.join(IMAGE_DIR_NAME, ::File.basename(placeholder_path))
+      else
+        if current_node = content.xpath(".//text:bookmark-start[@text:name='#{@name}']").first
+          while current_node = current_node.next
+            node = current_node.xpath(".//draw:image").first
+            (current_node = current_node.next and next) if node.nil?
 
+            placeholder_path = node.attribute('href').value
+            node.attribute('href').value = ::File.join(IMAGE_DIR_NAME, ::File.basename(path))
+            old_file = ::File.join(IMAGE_DIR_NAME, ::File.basename(placeholder_path))
+
+            break
+          end
+        end
+      end
+      {path=>old_file}
     end
 
     def get_value(data_item = nil)
@@ -39,9 +59,7 @@ module ODFReport
 
     def extract_value(data_item)
       return unless data_item
-
-      key = @data_field || @name
-
+      key = @data_image || @name
       if data_item.is_a?(Hash)
         data_item[key] || data_item[key.to_s.downcase] || data_item[key.to_s.upcase] || data_item[key.to_s.downcase.to_sym]
 
@@ -49,7 +67,7 @@ module ODFReport
         data_item.send(key.to_s.downcase.to_sym)
 
       else
-        raise "Can't find field [#{key}] in this #{data_item.class}"
+        raise "Can't find image [#{key}] in this #{data_item.class}"
 
       end
 
