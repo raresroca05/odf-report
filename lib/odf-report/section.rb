@@ -42,7 +42,7 @@ module ODFReport
 
       @section_node.remove
 
-      #update_images(file)
+      update_images(file)
 
       @image_name_additions
 

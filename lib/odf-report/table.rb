@@ -56,7 +56,7 @@ module ODFReport
         r.remove if (get_start_node..template_length) === i
       end
 
-      #update_images(file)
+      update_images(file)
 
       @image_name_additions
 
