@@ -15,6 +15,7 @@ module ODFReport
       @image_name_additions = {}
       @global_image_paths_set = Set.new
       @sections = []
+      @poorman_sections = []
 
       yield(self)
 
@@ -60,6 +61,14 @@ module ODFReport
       yield(sec)
     end
 
+    def add_poorman_section(section_name, collection, opts={})
+      opts.merge!(:name => section_name, :collection => collection)
+      sec = PoormanSection.new(opts)
+      @poorman_sections << sec
+
+      yield(sec)
+    end
+
     def generate(dest = nil)
 
       @file.update_content do |file|
@@ -69,6 +78,8 @@ module ODFReport
           parse_document(txt) do |doc|
 
             @sections.each { |s| @image_name_additions.merge! s.replace!(doc, file) }
+
+            @poorman_sections.each { |s| @image_name_additions.merge! s.replace!(doc, file) }
 
             @tables.each   { |t| @image_name_additions.merge! t.replace!(doc, file) }
 

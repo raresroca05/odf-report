@@ -40,6 +40,14 @@ module ODFReport
       yield(sec)
     end
 
+    def add_poorman_section(section_name, collection_field, opts={})
+      opts.merge!(:name => section_name, :collection_field => collection_field)
+      sec = PoormanSection.new(opts)
+      @poorman_sections << sec
+
+      yield(sec)
+    end
+
     def get_collection_from_item(item, collection_field)
 
       return item[collection_field] if item.is_a?(Hash)

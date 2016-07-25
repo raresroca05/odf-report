@@ -12,6 +12,7 @@ module ODFReport
       @texts = []
       @tables = []
       @sections = []
+      @poorman_sections = []
       @images = []
       @image_name_additions = {}
     end
