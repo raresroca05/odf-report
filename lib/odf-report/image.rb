@@ -42,8 +42,11 @@ module ODFReport
             node = current_node.xpath(".//draw:image").first
             (current_node = current_node.next and next) if node.nil?
 
+            return nil if node.attribute('odf-report-replaced')&.value == 'true'
+
             placeholder_path = node.attribute('href').value
             node.attribute('href').value = ::File.join(IMAGE_DIR_NAME, ::File.basename(path))
+            node.set_attribute('odf-report-replaced', 'true')
             old_file = ::File.join(IMAGE_DIR_NAME, ::File.basename(placeholder_path))
 
             break

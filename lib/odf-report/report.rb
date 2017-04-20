@@ -88,10 +88,13 @@ module ODFReport
 
             @fields.each   { |f| f.replace!(doc) }
 
-            @images.each   { |i| i.replace!(doc).nil? ? nil : (@image_name_additions.merge! i.replace!(doc)) }
+            @images.each   { |i| x = i.replace!(doc); x.nil? ? nil : (@image_name_additions.merge! x) }
 
             avoid_duplicate_image_names(doc)
 
+            doc.xpath('.//*[@odf-report-replaced]').each do |node|
+              node.remove_attribute('odf-report-replaced')
+            end
           end
 
         end
