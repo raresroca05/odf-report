@@ -1,4 +1,4 @@
-require './lib/odf-report'
+require '../lib/odf-report'
 require 'faker'
 
 
@@ -34,7 +34,7 @@ require 'faker'
 
     item = @items.pop
 
-    report = ODFReport::Report.new("test/templates/test_text.odt") do |r|
+    report = ODFReport::Report.new("templates/test_text.odt") do |r|
 
       r.add_field("TAG_01", Faker::Company.name)
       r.add_field("TAG_02", Faker::Company.catch_phrase)
@@ -53,4 +53,4 @@ require 'faker'
 
     end
 
-    report.generate("test/result/test_text.odt")
+    report.generate("result/test_text.odt")

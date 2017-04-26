@@ -8,29 +8,27 @@ module ODFReport
       @name = opts[:name]
       @data_field = opts[:data_field]
 
-      unless @value = opts[:value]
-
-        if block_given?
-          @block = block
-
-        else
-          @block = lambda { |item| self.extract_value(item) }
-        end
-
-      end
+      return if @value = opts[:value]
+      @block = if block_given?
+                 block
+               else
+                 ->(item) { extract_value(item) }
+               end
 
     end
 
     def replace!(content, data_item = nil)
 
+      # puts "replace called with content #{content} and data_item #{data_item}"
+      puts "value: #{@value}"
       txt = content.inner_html
-
+      # puts "txt: #{txt}"
       val = get_value(data_item)
-
+      # puts "value: #{val}"
+      puts to_placeholder
       txt.gsub!(to_placeholder, sanitize(val))
 
       content.inner_html = txt
-
     end
 
     def get_value(data_item = nil)
@@ -41,7 +39,7 @@ module ODFReport
       return unless data_item
 
       key = @data_field || @name
-
+      puts key
       if data_item.is_a?(Hash)
         data_item[key] || data_item[key.to_s.downcase] || data_item[key.to_s.upcase] || data_item[key.to_s.downcase.to_sym]
 
@@ -71,18 +69,17 @@ module ODFReport
       txt
     end
 
-    HTML_ESCAPE = { '&' => '&amp;',  '>' => '&gt;',   '<' => '&lt;', '"' => '&quot;' }
+    HTML_ESCAPE = {'&' => '&amp;', '>' => '&gt;', '<' => '&lt;', '"' => '&quot;'}
 
     def html_escape(s)
       return "" unless s
-      s.to_s.gsub(/[&"><]/) { |special| HTML_ESCAPE[special] }
+      s.to_s.gsub(/[&"><]/) {|special| HTML_ESCAPE[special]}
     end
 
     def odf_linebreak(s)
       return "" unless s
       s.to_s.gsub("\n", "<text:line-break/>")
     end
-
 
 
   end

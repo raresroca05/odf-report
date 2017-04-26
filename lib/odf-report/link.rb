@@ -11,7 +11,6 @@ module ODFReport
 
     def find_link_node(doc)
       links = doc.xpath(".//text:a[imatches(@xlink:href, '^http(s)?:\/\/#{@name}\/?$')]", XPathWorkaround.new)
-      links = doc.xpath(".//text:a[imatches(@xlink:href, '^http(s)?:\/\/#{@name}\/?$')]", XPathWorkaround.new)
       unless links.empty?
         return links.first
       end
