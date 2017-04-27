@@ -1,9 +1,14 @@
 require 'rubygems'
 require 'zip'
+require 'date'
 require 'fileutils'
 require 'nokogiri'
 require 'set'
 require 'mime/types'
+require 'active_support'
+require 'active_support/core_ext'
+require 'builder'
+require 'i18n'
 
 require File.expand_path('../odf-report/parser/default',  __FILE__)
 
@@ -18,3 +23,4 @@ require File.expand_path('../odf-report/section',   __FILE__)
 require File.expand_path('../odf-report/poorman_section',   __FILE__)
 require File.expand_path('../odf-report/table',     __FILE__)
 require File.expand_path('../odf-report/report',    __FILE__)
+require File.expand_path('../odf-report/calendar',  __FILE__)

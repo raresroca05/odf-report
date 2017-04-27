@@ -46,10 +46,8 @@ module ODFReport
       @texts << text
     end
 
-    def add_calendar(field_tag, value = '', opts = {})
-      return if @calendar
-      opts[:name] = field_tag
-      opts[:value] = value
+    def add_calendar(opts = {})
+      return if @calendar # only want to generate 1 calendar since it will always be the same
       calendar = Calendar.new(opts)
       @calendar = calendar
     end
