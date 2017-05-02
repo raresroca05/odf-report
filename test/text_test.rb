@@ -3,11 +3,11 @@ require 'faker'
 
 
 class Item
-  attr_accessor :name, :inner_text
+  attr_accessor :event_name, :event_location
 
   def initialize(_name, _text)
-    @name =_name
-    @inner_text =_text
+    @event_name =_name
+    @event_location =_text
   end
 end
 
@@ -27,7 +27,7 @@ end
         <p>#{Faker::Lorem.paragraph}</p>
   HTML
 
-  @items << Item.new(Faker::Name.name, text)
+  @items << Item.new(Faker::Name.name, "text")
 
 end
 
@@ -39,7 +39,10 @@ report = ODFReport::Report.new("templates/test_text.odt") do |r|
   r.add_field("TAG_01", Faker::Company.name)
   r.add_field("TAG_02", Faker::Company.catch_phrase)
 
-  r.add_calendar
+  r.add_calendar(@items, period: 'next-month') do |t|
+    t.add_field(:event_name) { |item| item.event_name }
+    t.add_field(:event_location) { |item| item.event_location }
+  end
 
 end
 

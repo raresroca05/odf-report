@@ -14,7 +14,6 @@ module ODFReport
                else
                  ->(item) { extract_value(item) }
                end
-
     end
 
     def replace!(content, data_item = nil)
@@ -24,8 +23,8 @@ module ODFReport
       txt = content.inner_html
       # puts "txt: #{txt}"
       val = get_value(data_item)
-      # puts "value: #{val}"
-      # puts to_placeholder
+      puts "value: #{val}"
+      puts "Placeholder: #{to_placeholder}"
       txt.gsub!(to_placeholder, sanitize(val))
 
       content.inner_html = txt
@@ -36,6 +35,7 @@ module ODFReport
     end
 
     def extract_value(data_item)
+      puts "extract value #{data_item}"
       return unless data_item
 
       key = @data_field || @name

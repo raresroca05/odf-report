@@ -16,8 +16,7 @@ module ODFReport
       @global_image_paths_set = Set.new
       @sections = []
       @poorman_sections = []
-      @calendar = nil
-
+      @calendars = []
       yield(self)
 
     end
@@ -25,6 +24,7 @@ module ODFReport
     def add_field(field_tag, value='')
       opts = {:name => field_tag, :value => value}
       field = Field.new(opts)
+      puts "added field #{field.inspect}"
       @fields << field
     end
 
@@ -46,10 +46,12 @@ module ODFReport
       @texts << text
     end
 
-    def add_calendar(opts = {})
-      return if @calendar # only want to generate 1 calendar since it will always be the same
+    def add_calendar(collection, opts = {})
+      opts[:collection] = collection
       calendar = Calendar.new(opts)
-      @calendar = calendar
+      @calendars << calendar
+
+      yield(calendar)
     end
 
     def add_table(table_name, collection, opts={})
@@ -95,7 +97,7 @@ module ODFReport
 
             @fields.each   { |f| f.replace!(doc) }
 
-            @calendar.replace!(doc) if @calendar
+            @calendars.each { |c| c.replace!(doc, file) }
 
             @images.each { |i| x = i.replace!(doc); x.nil? ? nil : (@image_name_additions.merge! x) }
 

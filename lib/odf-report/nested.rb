@@ -12,6 +12,7 @@ module ODFReport
     def add_field(name, data_field=nil, &block)
       opts = {:name => name, :data_field => data_field}
       field = Field.new(opts, &block)
+      puts "added field #{field.inspect}"
       @fields << field
 
     end
@@ -49,7 +50,6 @@ module ODFReport
     end
 
     def get_collection_from_item(item, collection_field)
-
       return item[collection_field] if item.is_a?(Hash)
 
       if collection_field.is_a?(Array)
