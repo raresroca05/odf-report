@@ -9,22 +9,20 @@ module ODFReport
       @period = opts[:period] || 'next-month'
       @start_day = opts[:start_day] || Date.today
       @end_day = nil
-      @header = opts[:header] || false
       @locale = opts[:locale] || 'en'
       @template = nil
       @fields = []
-      @collection_field = opts[:collection_field]
-      @collection = opts[:collection]
+      @collection = opts[:collection] || { Date.new(2017, 6, 6).to_s.to_sym => [{:event_name => 'Team1', :event_location => 'Brussels'},{:event_name => 'Team1', :event_location => 'Brussels'}],
+                                           Date.new(2017, 6, 14).to_s.to_sym => [{:event_name => 'Team2', :event_location => 'Antwerp'}]}
     end
 
-    def replace!(content, doc, row = nil)
+    def replace!(content)
 
       # make the template
       define_template content
       # create and save the table, all cells are filled in with the template
       return {} unless @table = find_section_node(content)
       calendar = generate_calendar
-      puts "Table node: #{@table}"
       @table.inner_html = calendar
 
       # cleanup
@@ -69,12 +67,11 @@ module ODFReport
             7.times do
               row.tag!('table:table-cell', 'office:value-type' => 'string') do |cell|
                 cell.tag!('text:p', current_day)
-                # items = @collection[current_day.to_s.to_sym]
-                test_items = [:event_name => 'Team1', :event_location => 'Brussels']
-                # next if items.empty?
-                generate_cell_node(cell, current_day.month, test_items)
-                current_day = current_day.next
+                items = @collection[current_day.to_s.to_sym]
+                next if items.nil?
+                generate_cell_node(cell, current_day.month, items)
               end
+              current_day = current_day.next
             end
           end
         end
@@ -83,11 +80,6 @@ module ODFReport
       table.to_xml
 
     end
-
-    def get_next_day(date, day_of_week)
-      date + ((day_of_week - date.wday) % 7)
-    end
-
 
     def parse_period
       period = @period
@@ -102,10 +94,6 @@ module ODFReport
         @start_day = month.at_beginning_of_week
         @end_day = month.at_end_of_month.at_end_of_week
       end
-    end
-
-    def days_in_month(month, year)
-      Date.new(year, month, -1).day
     end
 
     def to_start_placeholder

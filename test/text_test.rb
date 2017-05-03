@@ -38,6 +38,8 @@ collection = { Date.new(2017, 6, 6).to_s.to_sym => [{:event_name => 'Team1', :ev
 
 report = ODFReport::Report.new("templates/test_text.odt") do |r|
 
+  puts "Collection is a #{collection.is_a? (Hash)}"
+
   r.add_field("TAG_01", Faker::Company.name)
   r.add_field("TAG_02", Faker::Company.catch_phrase)
 

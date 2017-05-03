@@ -24,7 +24,6 @@ module ODFReport
     def add_field(field_tag, value='')
       opts = {:name => field_tag, :value => value}
       field = Field.new(opts)
-      puts "added field #{field.inspect}"
       @fields << field
     end
 
@@ -51,7 +50,6 @@ module ODFReport
       calendar = Calendar.new(opts)
       @calendars << calendar
 
-      yield(calendar)
     end
 
     def add_table(table_name, collection, opts={})
@@ -97,7 +95,7 @@ module ODFReport
 
             @fields.each   { |f| f.replace!(doc) }
 
-            @calendars.each { |c| c.replace!(doc, file) }
+            @calendars.each { |c| c.replace!(doc) }
 
             @images.each { |i| x = i.replace!(doc); x.nil? ? nil : (@image_name_additions.merge! x) }
 

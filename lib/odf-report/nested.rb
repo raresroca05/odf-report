@@ -12,7 +12,6 @@ module ODFReport
     def add_field(name, data_field=nil, &block)
       opts = {:name => name, :data_field => data_field}
       field = Field.new(opts, &block)
-      puts "added field #{field.inspect}"
       @fields << field
 
     end
