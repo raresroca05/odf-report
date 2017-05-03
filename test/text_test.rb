@@ -33,16 +33,15 @@ end
 
 
 item = @items.pop
+collection = { Date.new(2017, 6, 6).to_s.to_sym => [{:event_name => 'Team1', :event_location => 'Gent'},{:event_name => 'Team1', :event_location => 'Brussels'}],
+  Date.new(2017, 6, 14).to_s.to_sym => [{:event_name => 'Team2', :event_location => 'Oostende'}]}
 
 report = ODFReport::Report.new("templates/test_text.odt") do |r|
 
   r.add_field("TAG_01", Faker::Company.name)
   r.add_field("TAG_02", Faker::Company.catch_phrase)
 
-  r.add_calendar(@items, period: 'next-month') do |t|
-    t.add_field(:event_name) { |item| item.event_name }
-    t.add_field(:event_location) { |item| item.event_location }
-  end
+  r.add_calendar(collection, period: 'next-month')
 
 end
 
