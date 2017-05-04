@@ -43,7 +43,7 @@ report = ODFReport::Report.new("templates/test_text.odt") do |r|
   r.add_field("TAG_01", Faker::Company.name)
   r.add_field("TAG_02", Faker::Company.catch_phrase)
 
-  r.add_calendar(collection, period: 'next-month')
+  r.add_calendar(collection)
 
 end
 

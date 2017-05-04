@@ -2,12 +2,12 @@ module ODFReport
   class Calendar
     include Nested
 
-    VALID_PERIODS = %w{next-week next-month all-week all-month}
+    VALID_PERIODS = %w{week month}
     WEEK = 7
 
     def initialize(opts)
-      @period = opts[:period] || 'next-month'
-      @start_day = opts[:start_day] || Date.today
+      @period = opts[:period] || 'month'
+      @start_day = opts[:start_day] ? Date.parse(opts[:start_day]) : Date.today
       @end_day = nil
       @locale = opts[:locale] || 'en'
       @template = nil
@@ -108,8 +108,8 @@ module ODFReport
 
     def parse_period
       period = @period
-      return nil unless VALID_PERIODS.include? period
-      if period.end_with? 'week'
+      period = 'month' unless VALID_PERIODS.include? period
+      if period == 'week'
         @month = @start_day.month
         @start_day = @start_day.at_beginning_of_week.next_week
         @end_day = @start_day.at_end_of_week
