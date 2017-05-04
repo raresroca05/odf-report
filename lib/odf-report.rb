@@ -10,6 +10,8 @@ require 'active_support/core_ext'
 require 'builder'
 require 'i18n'
 
+I18n.load_path += Dir.glob( File.dirname(__FILE__) + '/locales/*.{rb,yml}' )
+
 require File.expand_path('../odf-report/parser/default',  __FILE__)
 
 require File.expand_path('../odf-report/image',    __FILE__)

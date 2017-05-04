@@ -3,20 +3,18 @@ module ODFReport
     include Nested
 
     VALID_PERIODS = %w{week month}
-    WEEK = 7
 
     def initialize(opts)
       @period = opts[:period] || 'month'
       @start_day = opts[:start_day] ? Date.parse(opts[:start_day]) : Date.today
       @end_day = nil
-      @locale = opts[:locale] || 'en'
       @template = nil
       @fields = []
       @collection = opts[:collection] || []
+      I18n.locale = opts[:locale] || 'en'
     end
 
     def replace!(content)
-
       # make the template
       create_calendar_style content
       define_template content
@@ -43,6 +41,7 @@ module ODFReport
       table_style['style:family'] = 'table'
       table_node = Nokogiri::XML::Node.new('style:table-properties', doc)
       table_node['style:width'] = '6.6924in'
+      table_node['fo:margin-top'] = '0.09in'
       table_node['table:align'] = 'margins'
       table_style.add_child table_node
 
@@ -71,14 +70,13 @@ module ODFReport
       table = Builder::XmlMarkup.new(indent: 2)
       table.tag!('table:table', 'table:name' => 'BeepleCalendar', 'table:style-name' => 'BeepleCalendar') do |table|
         # columns
-
         table.tag!('table:table-column', 'table:number-columns-repeated' => '7')
 
         # header
         table.tag!('table:table-row') do |row|
           7.times do |idx|
             row.tag!('table:table-cell', 'table:style-name' => 'BeepleCalendarCell', 'office:value-type' => 'string') do |cell|
-              cell.tag!('text:p', Date::DAYNAMES[(idx + 1) % 7])
+              cell.tag!('text:p', I18n.t('days.day_names')[idx])
             end
           end
         end
