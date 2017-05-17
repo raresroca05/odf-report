@@ -90,7 +90,9 @@ module ODFReport
             7.times do
               row.tag!('table:table-cell', 'table:style-name' => 'BeepleCalendarCell', 'office:value-type' => 'string') do |cell|
                 cell.tag!('text:p', current_day)
-                items = @collection[current_day.to_s.to_sym]
+                # p @collection["2017-06-07"]
+                items = @collection[current_day.to_s]
+                puts items
                 next if items.nil?
                 generate_cell_node(cell, current_day.month, items)
               end
@@ -147,7 +149,11 @@ module ODFReport
         end
         # template has been made, can now do textual substitute here
         # could we do add_field here?
-        item.each_pair { |key, value| parent_node.to_s.gsub!("[#{key.upcase}]", value) }
+        item.each_pair do |key, value|
+          p "Key - Value"
+          p "#{key} - #{value}"
+          parent_node.to_s.gsub!("[#{key.upcase}]", value.to_s)
+        end
       end
     end
 
