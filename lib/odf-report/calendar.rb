@@ -7,7 +7,7 @@ module ODFReport
     def initialize(opts)
       @period = opts[:period] || 'month'
       @start_day = opts[:start_day] ? Date.parse(opts[:start_day]) : Date.today
-      @end_day = nil
+      @end_day = opts[:end_day] ? Date.parse(opts[:end_day]) : Date.today + 1.month
       @template = nil
       @fields = []
       @collection = opts[:collection] || []
@@ -16,6 +16,7 @@ module ODFReport
 
     def replace!(content)
       # make the template
+      puts "From #{@start_day} till #{@end_day}"
       create_calendar_style content
       define_template content
       # create and save the table, all cells are filled in with the template
@@ -92,9 +93,9 @@ module ODFReport
                 cell.tag!('text:p', current_day)
                 # p @collection["2017-06-07"]
                 items = @collection[current_day.to_s]
-                puts items
+                puts "Items for #{current_day}: #{items}"
                 next if items.nil?
-                generate_cell_node(cell, current_day.month, items)
+                generate_cell_node(cell, items)
               end
               current_day = current_day.next
             end
@@ -107,18 +108,8 @@ module ODFReport
     end
 
     def parse_period
-      period = @period
-      period = 'month' unless VALID_PERIODS.include? period
-      if period == 'week'
-        @month = @start_day.month
-        @start_day = @start_day.at_beginning_of_week.next_week
-        @end_day = @start_day.at_end_of_week
-      else
-        month = @start_day.at_beginning_of_month.next_month
-        @month = month.month
-        @start_day = month.at_beginning_of_week
-        @end_day = month.at_end_of_month.at_end_of_week
-      end
+      @start_day = @start_day.at_beginning_of_week
+      @end_day = @end_day.at_end_of_week
     end
 
     def to_start_placeholder
@@ -141,8 +132,7 @@ module ODFReport
 
     end
 
-    def generate_cell_node(parent_node, month, collection)
-      return unless @month == month
+    def generate_cell_node(parent_node, collection)
       collection.each do |item|
         @template.each do |line|
           parent_node.tag!('text:p', line.text, 'text:style-name' => line.first[1])
@@ -150,7 +140,7 @@ module ODFReport
         # template has been made, can now do textual substitute here
         # could we do add_field here?
         item.each_pair do |key, value|
-          p "Key - Value"
+          p "Key - Value (test)"
           p "#{key} - #{value}"
           parent_node.to_s.gsub!("[#{key.upcase}]", value.to_s)
         end
