@@ -16,7 +16,7 @@ module ODFReport
       @global_image_paths_set = Set.new
       @sections = []
       @poorman_sections = []
-
+      @calendars = []
       yield(self)
 
     end
@@ -43,6 +43,13 @@ module ODFReport
       opts = {:name => field_tag, :value => value}
       text = Text.new(opts)
       @texts << text
+    end
+
+    def add_calendar(collection, opts = {})
+      opts[:collection] = collection
+      calendar = Calendar.new(opts)
+      @calendars << calendar
+
     end
 
     def add_table(table_name, collection, opts={})
@@ -88,7 +95,9 @@ module ODFReport
 
             @fields.each   { |f| f.replace!(doc) }
 
-            @images.each   { |i| x = i.replace!(doc); x.nil? ? nil : (@image_name_additions.merge! x) }
+            @calendars.each { |c| c.replace!(doc) }
+
+            @images.each { |i| x = i.replace!(doc); x.nil? ? nil : (@image_name_additions.merge! x) }
 
             avoid_duplicate_image_names(doc)
 

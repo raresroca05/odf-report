@@ -26,6 +26,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency "launchy"
 
   s.add_runtime_dependency('rubyzip', "~> 1.1.6")
+  s.add_runtime_dependency('activesupport-core-ext', '~> 4.0')
   s.add_runtime_dependency('nokogiri', ">= 1.5.0")
+  s.add_runtime_dependency('builder')
 
 end

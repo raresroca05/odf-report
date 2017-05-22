@@ -1,4 +1,4 @@
-require './lib/odf-report'
+require '../lib/odf-report'
 require 'ostruct'
 require 'faker'
 require 'launchy'
@@ -21,7 +21,7 @@ require 'launchy'
     @items << Item.new("BREAKING BAD",   '556', %w(pollos gus mike heisenberg))
 
 
-    report = ODFReport::Report.new("test/templates/test_sections.odt") do |r|
+    report = ODFReport::Report.new("templates/test_sections.odt") do |r|
 
       r.add_field("TAG_01", Time.now)
       r.add_field("TAG_02", "TAG-2 -> New tag")
@@ -41,4 +41,4 @@ require 'launchy'
 
     end
 
-    report.generate("test/result/test_sections.odt")
+    report.generate("result/test_sections.odt")

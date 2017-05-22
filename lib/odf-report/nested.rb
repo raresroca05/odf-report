@@ -49,7 +49,6 @@ module ODFReport
     end
 
     def get_collection_from_item(item, collection_field)
-
       return item[collection_field] if item.is_a?(Hash)
 
       if collection_field.is_a?(Array)

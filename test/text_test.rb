@@ -1,21 +1,21 @@
-require './lib/odf-report'
+require '../lib/odf-report'
 require 'faker'
 
 
-  class Item
-    attr_accessor :name, :inner_text
-    def initialize(_name,  _text)
-      @name=_name
-      @inner_text=_text
-    end
+class Item
+  attr_accessor :event_name, :event_location
+
+  def initialize(_name, _text)
+    @event_name =_name
+    @event_location =_text
   end
+end
 
 
+@items = []
+3.times do
 
-    @items = []
-    3.times do
-
-      text = <<-HTML
+  text = <<-HTML
         <p>#{Faker::Lorem.sentence} <em>#{Faker::Lorem.sentence}</em> #{Faker::Lorem.sentence}</p>
         <p>#{Faker::Lorem.sentence} <strong>#{Faker::Lorem.paragraph(3)}</strong> #{Faker::Lorem.sentence}</p>
         <p>#{Faker::Lorem.paragraph}</p>
@@ -25,32 +25,26 @@ require 'faker'
         </blockquote>
         <p style="margin: 150px">#{Faker::Lorem.paragraph}</p>
         <p>#{Faker::Lorem.paragraph}</p>
-      HTML
+  HTML
 
-      @items << Item.new(Faker::Name.name, text)
+  @items << Item.new(Faker::Name.name, "text")
 
-    end
+end
 
 
-    item = @items.pop
+item = @items.pop
+collection = { Date.new(2017, 6, 6).to_s.to_sym => [{:event_name => 'Team1', :event_location => 'Gent'},{:event_name => 'Team1', :event_location => 'Brussels'}],
+  Date.new(2017, 6, 14).to_s.to_sym => [{:event_name => 'Team2', :event_location => 'Oostende'}]}
 
-    report = ODFReport::Report.new("test/templates/test_text.odt") do |r|
+report = ODFReport::Report.new("templates/test_text.odt") do |r|
 
-      r.add_field("TAG_01", Faker::Company.name)
-      r.add_field("TAG_02", Faker::Company.catch_phrase)
+  puts "Collection is a #{collection.is_a? (Hash)}"
 
-      r.add_text(:main_text, item.inner_text)
+  r.add_field("TAG_01", Faker::Company.name)
+  r.add_field("TAG_02", Faker::Company.catch_phrase)
 
-      r.add_section("SECTION_01", @items) do |s|
-        s.add_field(:name)
-        s.add_text(:inner_text) { |i| i.inner_text }
-      end
+  r.add_calendar(collection)
 
-      r.add_table("TABLE", @items) do |s|
-        s.add_field(:field, :name)
-        s.add_text(:text, :inner_text)
-      end
+end
 
-    end
-
-    report.generate("test/result/test_text.odt")
+report.generate("result/test_text.odt")
