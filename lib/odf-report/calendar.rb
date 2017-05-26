@@ -93,7 +93,6 @@ module ODFReport
                 cell.tag!('text:p', current_day)
                 # p @collection["2017-06-07"]
                 items = @collection[current_day.to_s]
-                puts "Items for #{current_day}: #{items}"
                 next if items.nil?
                 generate_cell_node(cell, items)
               end
@@ -139,11 +138,20 @@ module ODFReport
         end
         # template has been made, can now do textual substitute here
         # could we do add_field here?
+        # IMPORTANT: VALUE CAN BE AN ARRAY OF HASHES!! => recursive call needed!
+        # inside the do: if value.is_a? Array then loop over its hash the same way (can also need a recursive call)
         item.each_pair do |key, value|
-          p "Key - Value (test)"
-          p "#{key} - #{value}"
+          substitute_recursive value, parent_node if value.is_a? Array
           parent_node.to_s.gsub!("[#{key.upcase}]", value.to_s)
         end
+      end
+    end
+
+    def substitute_recursive(item, node)
+      return if item.empty?
+      item.first.each_pair do |key, value|
+        substitute_recursive value, node if value.is_a? Array
+        node.to_s.gsub! "[#{key.upcase}]", value.to_s
       end
     end
 
