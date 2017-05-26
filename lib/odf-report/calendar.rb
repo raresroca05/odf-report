@@ -112,20 +112,20 @@ module ODFReport
     end
 
     def to_start_placeholder
-      '[[CALENDAR]]'
+      '{{CALENDAR}}'
     end
 
     def to_end_placeholder
-      '[[/CALENDAR]]'
+      '{{/CALENDAR}}'
     end
 
     def define_template(doc)
 
       # selects all text:p nodes between calendar tags
-      cell_markup_nodes = doc.xpath(".//text:p[contains(text(), '#{to_start_placeholder}')]/
-                                          following-sibling::text:p[contains(text(), '#{to_end_placeholder}')]/
-                                            preceding-sibling::text:p[
-                                              preceding-sibling::text:p[contains(text(), '#{to_start_placeholder}')]
+      cell_markup_nodes = doc.xpath(".//*[self::text:span or self::text:p][contains(text(), '#{to_start_placeholder}')]/
+                                          following::*[self::text:span or self::text:p][contains(text(), '#{to_end_placeholder}')]/
+                                            preceding::*[text:span or text:p][
+                                              preceding::*[self::text:span or self::text:p][contains(text(), '#{to_start_placeholder}')]
                                             ]")
       @template = cell_markup_nodes
 
@@ -134,15 +134,24 @@ module ODFReport
     def generate_cell_node(parent_node, collection)
       collection.each do |item|
         @template.each do |line|
-          parent_node.tag!('text:p', line.text, 'text:style-name' => line.first[1])
+          if line.children
+            parent_node.tag!('text:p', 'text:style-name' => line.first[1]) do |p|
+              line.children.each do |child|
+                p.tag!('text:span', child.text, 'text:style-name' => child.attribute('style-name'))
+              end
+            end
+          else
+             parent_node.tag!('text:p', line.text, 'text:style-name' => line.attribute('style-name'))
+          end
         end
+
         # template has been made, can now do textual substitute here
         # could we do add_field here?
         # IMPORTANT: VALUE CAN BE AN ARRAY OF HASHES!! => recursive call needed!
         # inside the do: if value.is_a? Array then loop over its hash the same way (can also need a recursive call)
         item.each_pair do |key, value|
           substitute_recursive value, parent_node if value.is_a? Array
-          parent_node.to_s.gsub!("[#{key.upcase}]", value.to_s)
+          parent_node.to_s.gsub!("{{#{key.upcase}]}}", value.to_s)
         end
       end
     end
@@ -151,7 +160,7 @@ module ODFReport
       return if item.empty?
       item.first.each_pair do |key, value|
         substitute_recursive value, node if value.is_a? Array
-        node.to_s.gsub! "[#{key.upcase}]", value.to_s
+        node.to_s.gsub! "{{#{key.upcase}}}", value.to_s
       end
     end
 
