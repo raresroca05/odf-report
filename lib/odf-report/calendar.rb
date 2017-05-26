@@ -19,9 +19,6 @@ module ODFReport
       puts "From #{@start_day} till #{@end_day}"
       create_calendar_style content
       define_template content
-      puts @template.inspect
-      puts content.xpath(".//*[self::text:span or self::text:p][contains(text(), '#{to_start_placeholder}')]").inspect
-
       # create and save the table, all cells are filled in with the template
       return {} unless @table = find_section_node(content)
       calendar = generate_calendar
@@ -137,8 +134,26 @@ module ODFReport
     def generate_cell_node(parent_node, collection)
       collection.each do |item|
         @template.each do |line|
-          parent_node.tag!('text:p', line.text, 'text:style-name' => line.first[1])
+          # puts line.inspect
+          line_copy = if line.children
+                        line.children
+                      else
+                        line
+                      end
+          style = line_copy.attribute('style-name')
+
+          if line.children
+            parent_node.tag!('text:p', 'text:style-name' => line.first[1]) do |p|
+              line.children.each do |child|
+                p child
+                p.tag!('text:span', child.text, 'text:style-name' => child.attribute('style-name'))
+              end
+            end
+          else
+             parent_node.tag!('text:p', line.text, 'text:style-name' => line.first[1])
+          end
         end
+
         # template has been made, can now do textual substitute here
         # could we do add_field here?
         # IMPORTANT: VALUE CAN BE AN ARRAY OF HASHES!! => recursive call needed!
