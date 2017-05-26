@@ -134,23 +134,14 @@ module ODFReport
     def generate_cell_node(parent_node, collection)
       collection.each do |item|
         @template.each do |line|
-          # puts line.inspect
-          line_copy = if line.children
-                        line.children
-                      else
-                        line
-                      end
-          style = line_copy.attribute('style-name')
-
           if line.children
             parent_node.tag!('text:p', 'text:style-name' => line.first[1]) do |p|
               line.children.each do |child|
-                p child
                 p.tag!('text:span', child.text, 'text:style-name' => child.attribute('style-name'))
               end
             end
           else
-             parent_node.tag!('text:p', line.text, 'text:style-name' => line.first[1])
+             parent_node.tag!('text:p', line.text, 'text:style-name' => line.attribute('style-name'))
           end
         end
 
