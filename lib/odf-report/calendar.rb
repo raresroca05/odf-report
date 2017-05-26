@@ -19,6 +19,9 @@ module ODFReport
       puts "From #{@start_day} till #{@end_day}"
       create_calendar_style content
       define_template content
+      puts @template.inspect
+      puts content.xpath(".//*[self::text:span or self::text:p][contains(text(), '#{to_start_placeholder}')]").inspect
+
       # create and save the table, all cells are filled in with the template
       return {} unless @table = find_section_node(content)
       calendar = generate_calendar
@@ -112,20 +115,20 @@ module ODFReport
     end
 
     def to_start_placeholder
-      '[[CALENDAR]]'
+      '{{CALENDAR}}'
     end
 
     def to_end_placeholder
-      '[[/CALENDAR]]'
+      '{{/CALENDAR}}'
     end
 
     def define_template(doc)
 
       # selects all text:p nodes between calendar tags
-      cell_markup_nodes = doc.xpath(".//text:p[contains(text(), '#{to_start_placeholder}')]/
-                                          following-sibling::text:p[contains(text(), '#{to_end_placeholder}')]/
-                                            preceding-sibling::text:p[
-                                              preceding-sibling::text:p[contains(text(), '#{to_start_placeholder}')]
+      cell_markup_nodes = doc.xpath(".//*[self::text:span or self::text:p][contains(text(), '#{to_start_placeholder}')]/
+                                          following::*[self::text:span or self::text:p][contains(text(), '#{to_end_placeholder}')]/
+                                            preceding::*[text:span or text:p][
+                                              preceding::*[self::text:span or self::text:p][contains(text(), '#{to_start_placeholder}')]
                                             ]")
       @template = cell_markup_nodes
 
@@ -142,7 +145,7 @@ module ODFReport
         # inside the do: if value.is_a? Array then loop over its hash the same way (can also need a recursive call)
         item.each_pair do |key, value|
           substitute_recursive value, parent_node if value.is_a? Array
-          parent_node.to_s.gsub!("[#{key.upcase}]", value.to_s)
+          parent_node.to_s.gsub!("{{#{key.upcase}]}}", value.to_s)
         end
       end
     end
@@ -151,7 +154,7 @@ module ODFReport
       return if item.empty?
       item.first.each_pair do |key, value|
         substitute_recursive value, node if value.is_a? Array
-        node.to_s.gsub! "[#{key.upcase}]", value.to_s
+        node.to_s.gsub! "{{#{key.upcase}}}", value.to_s
       end
     end
 
