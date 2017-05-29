@@ -89,7 +89,7 @@ module ODFReport
           table.tag!('table:table-row', 'table:style-name' => 'BeepleCalendarRow') do |row|
             7.times do
               row.tag!('table:table-cell', 'table:style-name' => 'BeepleCalendarCell', 'office:value-type' => 'string') do |cell|
-                cell.tag!('text:p', current_day)
+                cell.tag!('text:p', current_day.strftime('%d/%m/%Y'))
                 # p @collection["2017-06-07"]
                 items = @collection[current_day.to_s]
                 next if items.nil?
