@@ -16,7 +16,6 @@ module ODFReport
 
     def replace!(content)
       # make the template
-      puts "From #{@start_day} till #{@end_day}"
       create_calendar_style content
       define_template content
       # create and save the table, all cells are filled in with the template
@@ -150,8 +149,8 @@ module ODFReport
         # IMPORTANT: VALUE CAN BE AN ARRAY OF HASHES!! => recursive call needed!
         # inside the do: if value.is_a? Array then loop over its hash the same way (can also need a recursive call)
         item.each_pair do |key, value|
-          substitute_recursive value, parent_node if value.is_a? Array
-          parent_node.to_s.gsub!("{{#{key.upcase}]}}", value.to_s)
+          # substitute_recursive value, parent_node if value.is_a? Array
+          parent_node.to_s.gsub!("{{#{key.upcase}}}", value.to_s)
         end
       end
     end
