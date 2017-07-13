@@ -128,6 +128,31 @@ module ODFReport
 
     end
 
+    def find_nested_sets
+      nested_sets = []
+
+      @file.update_content do |file|
+        file.update_files('content.xml', 'styles.xml') do |txt|
+          parse_document(txt) do |doc|
+            bookmarks = doc.xpath(".//text:bookmark[@text:name]")
+            bookmarks.each do |bookmark|
+              next if bookmark.ancestors('.//table:table').empty?
+
+              nested_sets.push(bookmark.attribute('name').value)
+            end
+
+            poorman_sections_ends = doc.xpath(".//*[contains(text(), '{{/')]")
+            poorman_sections_ends.each do |poorman_sections_end|
+              matches = poorman_sections_end.text().scan(/{{\/([a-zA-Z_0-9]+)}}/)
+              nested_sets.concat(matches.map { |match| match[0] })
+            end
+          end
+        end
+      end
+
+      nested_sets
+    end
+
     private
 
     def parse_document(txt)
