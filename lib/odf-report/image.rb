@@ -25,19 +25,33 @@ module ODFReport
     def replace!(content, data_item = nil)
       old_file = ''
 
-      path = get_value(data_item)
-
-      if path.empty?
-        return
-      end
-
-
       if node = content.xpath("//draw:frame[@draw:name='#{@name}']/draw:image").first
+        path = get_value(data_item)
+
+        if path.nil?
+          return
+        end
+
+        if path.respond_to?(:call)
+          path = path.call
+        end
+
         placeholder_path = node.attribute('href').value
         node.attribute('href').value = ::File.join(IMAGE_DIR_NAME, ::File.basename(path))
         old_file = ::File.join(IMAGE_DIR_NAME, ::File.basename(placeholder_path))
       else
         if current_node = content.xpath(".//text:bookmark-start[@text:name='#{@name}']").first
+          path = get_value(data_item)
+
+          if path.nil?
+            return
+          end
+
+          if path.respond_to?(:call)
+            path = path.call
+            return if path.blank?
+          end
+
           while current_node = current_node.next
             node = current_node.xpath(".//draw:image").first
             (current_node = current_node.next and next) if node.nil?
@@ -51,13 +65,15 @@ module ODFReport
 
             break
           end
+        else
+          return nil # Path is not used
         end
       end
       {path=>old_file}
     end
 
     def get_value(data_item = nil)
-      @value || @block.call(data_item) || ''
+      @value || @block.call(data_item) || nil
     end
 
     def extract_value(data_item)
