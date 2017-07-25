@@ -25,7 +25,7 @@ module ODFReport
 
         node = content.create_element('manifest:file-entry')
         node['manifest:full-path'] = path
-        node['manifest:media-type'] = MIME::Types.type_for(path)[0].content_type
+        node['manifest:media-type'] = local_file.respond_to?(:content_type) ? local_file.content_type : MIME::Types.type_for(path)[0].content_type
 
         root_node.add_child node
       end

@@ -34,6 +34,7 @@ module ODFReport
 
         if path.respond_to?(:call)
           path = path.call
+          return if path.blank?
         end
 
         placeholder_path = node.attribute('href').value
@@ -43,7 +44,7 @@ module ODFReport
         if current_node = content.xpath(".//text:bookmark-start[@text:name='#{@name}']").first
           path = get_value(data_item)
 
-          if path.nil?
+          if path.blank?
             return
           end
 
@@ -66,9 +67,10 @@ module ODFReport
             break
           end
         else
-          return nil # Path is not used
+          return nil
         end
       end
+
       {path=>old_file}
     end
 
