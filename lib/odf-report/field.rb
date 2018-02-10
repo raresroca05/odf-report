@@ -4,6 +4,8 @@ module ODFReport
 
     DELIMITERS = %w({{ }})
 
+    attr_reader :name
+
     def initialize(opts, &block)
       @name = opts[:name]
       @data_field = opts[:data_field]

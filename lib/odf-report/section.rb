@@ -33,7 +33,7 @@ module ODFReport
 
         @texts.each    { |t| t.replace!(new_section, data_item) }
 
-        @fields.each   { |f| f.replace!(new_section, data_item) }
+        replace_fields(new_section, data_item)
 
         @images.each   { |i| x = i.replace!(new_section, data_item); x.nil? ? nil : (@image_name_additions.merge! x) }
 

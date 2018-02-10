@@ -70,6 +70,18 @@ module ODFReport
       return collection
     end
 
+    def replace_fields(content, data_item)
+      txt_version = content.inner_html
+      used_keys = txt_version.scan(/#{Field::DELIMITERS[0]}([a-zA-Z0-9_]+)#{Field::DELIMITERS[1]}/).map { |match| match[0] }
+
+      (@fields.select { |f| used_keys.include?(f.name.to_s) }).each do |f|
+        val = f.get_value(data_item)
+        txt_version.gsub!(f.send(:to_placeholder), f.send(:sanitize, val))
+      end
+
+      content.inner_html = txt_version
+    end
+
   end
 
 end
