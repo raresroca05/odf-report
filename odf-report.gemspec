@@ -29,5 +29,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('activesupport-core-ext', '~> 4.0')
   s.add_runtime_dependency('nokogiri', ">= 1.5.0")
   s.add_runtime_dependency('builder')
+  s.add_runtime_dependency('rmagick')
 
 end

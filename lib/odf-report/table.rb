@@ -20,7 +20,7 @@ module ODFReport
       @skip_if_empty    = opts[:skip_if_empty] || false
     end
 
-    def replace!(doc, file, row = nil)
+    def replace!(doc, file, original_zip_file, row = nil)
 
       return {} unless table = find_table_node(doc)
 
@@ -40,7 +40,7 @@ module ODFReport
 
         new_node = get_next_row
 
-        @tables.each { |t| @image_name_additions.merge! t.replace!(new_node, file, data_item) }
+        @tables.each { |t| @image_name_additions.merge! t.replace!(new_node, file, original_zip_file, data_item) }
 
         @texts.each  { |t| t.replace!(new_node, data_item) }
 
@@ -56,7 +56,7 @@ module ODFReport
         r.remove if (get_start_node..template_length) === i
       end
 
-      update_images(file)
+      update_images(file, original_zip_file)
 
       @image_name_additions
 

@@ -80,15 +80,15 @@ module ODFReport
 
       @file.update_content do |file|
 
-        file.update_files('content.xml', 'styles.xml') do |txt|
+        file.update_files('content.xml', 'styles.xml') do |txt, original_zip_file|
 
           parse_document(txt) do |doc|
 
-            @sections.each { |s| @image_name_additions.merge! s.replace!(doc, file) }
+            @sections.each { |s| @image_name_additions.merge! s.replace!(doc, file, original_zip_file) }
 
-            @poorman_sections.each { |s| @image_name_additions.merge! s.replace!(doc, file) }
+            @poorman_sections.each { |s| @image_name_additions.merge! s.replace!(doc, file, original_zip_file) }
 
-            @tables.each   { |t| @image_name_additions.merge! t.replace!(doc, file) }
+            @tables.each   { |t| @image_name_additions.merge! t.replace!(doc, file, original_zip_file) }
 
             @texts.each    { |t| t.replace!(doc) }
             @links.each    { |l| l.replace!(doc) }
@@ -108,7 +108,7 @@ module ODFReport
 
         end
 
-        update_images(file)
+        update_images(file, nil)
 
         file.update_manifest_file do |txt|
 

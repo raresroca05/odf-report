@@ -17,7 +17,7 @@ module ODFReport
       @image_name_additions = {}
     end
 
-    def replace!(doc, file, row = nil)
+    def replace!(doc, file, original_zip_file, row = nil)
 
       return {} unless @section_node = find_section_node(doc)
 
@@ -27,9 +27,9 @@ module ODFReport
 
         new_section = get_section_node
 
-        @sections.each { |s| @image_name_additions.merge! s.replace!(new_section, file, data_item) }
+        @sections.each { |s| @image_name_additions.merge! s.replace!(new_section, file, original_zip_file, data_item) }
 
-        @tables.each   { |t| @image_name_additions.merge! t.replace!(new_section, file, data_item) }
+        @tables.each   { |t| @image_name_additions.merge! t.replace!(new_section, file, original_zip_file, data_item) }
 
         @texts.each    { |t| t.replace!(new_section, data_item) }
 
@@ -43,7 +43,7 @@ module ODFReport
 
       @section_node.remove
 
-      update_images(file)
+      update_images(file, original_zip_file)
 
       @image_name_additions
 

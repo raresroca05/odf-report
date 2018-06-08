@@ -31,7 +31,7 @@ module ODFReport
             data = is.sysread
 
             if content_files.include?(entry.name)
-              yield data
+              yield data, file
             end
 
             if MANIFEST_FILE.eql? entry.name

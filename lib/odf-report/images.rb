@@ -1,17 +1,44 @@
+require 'rmagick'
+
 module ODFReport
 
   module Images
 
     IMAGE_DIR_NAME = "Pictures"
 
-    def update_images(file)
+    def update_images(file, original_zip_file)
       return if @images.empty?
 
       @image_name_additions.each_pair do |local_file, old_file|
 
+        replaced_image_content = ::File.read(local_file)
+        if original_zip_file
+          entry = original_zip_file.find_entry(old_file)
+          unless entry.nil?
+            original_image = Magick::Image.from_blob(entry.get_input_stream.read)[0]
+            new_image = Magick::Image.from_blob(replaced_image_content)[0]
+            original_image_ratio = original_image.base_columns.to_f / original_image.base_rows.to_f
+            new_image_ratio = new_image.base_columns.to_f / new_image.base_rows.to_f
+            if original_image_ratio != new_image_ratio
+              width, height = if original_image_ratio > new_image_ratio
+                [new_image.base_columns.to_f * original_image_ratio / new_image_ratio, new_image.base_rows.to_f]
+              else
+                [new_image.base_columns.to_f * original_image_ratio / new_image_ratio, new_image.base_rows.to_f]
+              end
+            end
+
+            new_image.resize_to_fit!(width, height)
+            empty_img = ::Magick::Image.new(width, height) { self.background_color = 'rgba(255,255,255,0)' }
+            filled = empty_img.matte_floodfill(1, 1)
+            filled.composite!(new_image, Magick::CenterGravity, ::Magick::OverCompositeOp)
+            filled.format = original_image.format
+            #filled.quality = original_image.quality
+            replaced_image_content = filled.to_blob
+          end
+        end
         new_file = ::File.join(IMAGE_DIR_NAME, ::File.basename(local_file))
         file.output_stream.put_next_entry(new_file)
-        file.output_stream.write ::File.read(local_file)
+        file.output_stream.write(replaced_image_content)
       end
     end
 
