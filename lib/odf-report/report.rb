@@ -108,7 +108,9 @@ module ODFReport
 
         end
 
-        update_images(file, nil)
+        @file.original_zip_file do |zip_file|
+          update_images(file, zip_file)
+        end
 
         file.update_manifest_file do |txt|
 

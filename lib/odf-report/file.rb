@@ -18,6 +18,12 @@ module ODFReport
       end
     end
 
+    def original_zip_file(&block)
+      Zip::File.open(@template) do |file|
+        yield file
+      end
+    end
+
     def update_files(*content_files, &block)
 
       Zip::File.open(@template) do |file|

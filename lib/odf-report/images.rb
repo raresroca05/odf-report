@@ -10,7 +10,6 @@ module ODFReport
       return if @images.empty?
 
       @image_name_additions.each_pair do |local_file, old_file|
-
         replaced_image_content = ::File.read(local_file)
         if original_zip_file
           entry = original_zip_file.find_entry(old_file)
@@ -23,10 +22,12 @@ module ODFReport
               width, height = if original_image_ratio > new_image_ratio
                 [new_image.base_columns.to_f * original_image_ratio / new_image_ratio, new_image.base_rows.to_f]
               else
-                [new_image.base_columns.to_f * original_image_ratio / new_image_ratio, new_image.base_rows.to_f]
+                [new_image.base_columns.to_f, new_image.base_rows.to_f * new_image_ratio / original_image_ratio]
               end
             end
 
+            puts "ORIGINAL: #{new_image.base_columns.to_f}, #{new_image.base_rows.to_f}"
+            puts "NEW: #{width}, #{height}"
             new_image.resize_to_fit!(width, height)
             empty_img = ::Magick::Image.new(width, height) { self.background_color = 'rgba(255,255,255,0)' }
             filled = empty_img.matte_floodfill(1, 1)
@@ -34,6 +35,8 @@ module ODFReport
             filled.format = original_image.format
             #filled.quality = original_image.quality
             replaced_image_content = filled.to_blob
+          else
+            i_am_confused
           end
         end
         new_file = ::File.join(IMAGE_DIR_NAME, ::File.basename(local_file))
