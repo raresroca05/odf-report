@@ -24,17 +24,17 @@ module ODFReport
               else
                 [new_image.base_columns.to_f, new_image.base_rows.to_f * new_image_ratio / original_image_ratio]
               end
-            end
 
-            puts "ORIGINAL: #{new_image.base_columns.to_f}, #{new_image.base_rows.to_f}"
-            puts "NEW: #{width}, #{height}"
-            new_image.resize_to_fit!(width, height)
-            empty_img = ::Magick::Image.new(width, height) { self.background_color = 'rgba(255,255,255,0)' }
-            filled = empty_img.matte_floodfill(1, 1)
-            filled.composite!(new_image, Magick::CenterGravity, ::Magick::OverCompositeOp)
-            filled.format = original_image.format
-            #filled.quality = original_image.quality
-            replaced_image_content = filled.to_blob
+              puts "ORIGINAL: #{new_image.base_columns.to_f}, #{new_image.base_rows.to_f}"
+              puts "NEW: #{width}, #{height}"
+              new_image.resize_to_fit!(width, height)
+              empty_img = ::Magick::Image.new(width, height) { self.background_color = 'rgba(255,255,255,0)' }
+              filled = empty_img.matte_floodfill(1, 1)
+              filled.composite!(new_image, Magick::CenterGravity, ::Magick::OverCompositeOp)
+              filled.format = original_image.format
+              #filled.quality = original_image.quality
+              replaced_image_content = filled.to_blob
+            end
           else
             i_am_confused
           end
