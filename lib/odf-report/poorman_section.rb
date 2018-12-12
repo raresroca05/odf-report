@@ -20,6 +20,7 @@ module ODFReport
     def replace!(doc, file, original_zip_file, row = nil)
 
       return {} unless @section_node = find_section_node(doc)
+      @image_name_additions = {}
 
       @collection = get_collection_from_item(row, @collection_field) if row
 
