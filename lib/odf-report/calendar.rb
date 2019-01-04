@@ -85,7 +85,7 @@ module ODFReport
         parse_period
         current_day = @start_day
         end_day = @end_day
-        while current_day != end_day.next
+        while current_day < end_day.next
           table.tag!('table:table-row', 'table:style-name' => 'BeepleCalendarRow') do |row|
             7.times do
               row.tag!('table:table-cell', 'table:style-name' => 'BeepleCalendarCell', 'office:value-type' => 'string') do |cell|
