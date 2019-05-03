@@ -150,9 +150,27 @@ module ODFReport
         # inside the do: if value.is_a? Array then loop over its hash the same way (can also need a recursive call)
         item.each_pair do |key, value|
           # substitute_recursive value, parent_node if value.is_a? Array
-          parent_node.to_s.gsub!("{{#{key.upcase}}}", value.to_s)
+          parent_node.to_s.gsub!("{{#{key.upcase}}}", sanitize(value.to_s))
         end
       end
+    end
+
+    def sanitize(txt)
+      txt = html_escape(txt)
+      txt = odf_linebreak(txt)
+      txt
+    end
+
+    HTML_ESCAPE = {'&' => '&amp;', '>' => '&gt;', '<' => '&lt;', '"' => '&quot;'}
+
+    def html_escape(s)
+      return "" unless s
+      s.to_s.gsub(/[&"><]/) {|special| HTML_ESCAPE[special]}
+    end
+
+    def odf_linebreak(s)
+      return "" unless s
+      s.to_s.gsub("\n", "<text:line-break/>")
     end
 
     def substitute_recursive(item, node)
