@@ -55,7 +55,7 @@ module ODFReport
 
           while current_node = current_node.next
             node = current_node.xpath(".//draw:image").first
-            (current_node = current_node.next and next) if node.nil?
+            next if node.nil?
 
             return nil if node.attribute('odf-report-replaced')&.value == 'true'
 
