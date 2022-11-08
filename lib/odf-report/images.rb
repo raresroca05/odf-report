@@ -28,7 +28,7 @@ module ODFReport
               puts "ORIGINAL: #{new_image.base_columns.to_f}, #{new_image.base_rows.to_f}"
               puts "NEW: #{width}, #{height}"
               new_image.resize_to_fit!(width, height)
-              empty_img = ::Magick::Image.new(width, height) { background_color = 'rgba(255,255,255,0)' }
+              empty_img = ::Magick::Image.new(width, height) { |img| img.background_color = 'rgba(255,255,255,0)' }
               filled = empty_img.matte_floodfill(1, 1)
               filled.composite!(new_image, Magick::CenterGravity, ::Magick::OverCompositeOp)
               filled.format = original_image.format
